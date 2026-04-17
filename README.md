@@ -13,8 +13,7 @@ VPN-сервер на роутере — это ваш личный защищё
 
 ## Запуск:
 > [!WARNING]  
-> ОБЯЗАТЕЛЬНО убедитесь что установлены следующие пакеты:
-> coreutils-od
+> ОБЯЗАТЕЛЬНО убедитесь что установлены следующие пакеты: coreutils-od
 ```
 sh -c "$(wget -O - https://raw.githubusercontent.com/tankionline2005/AmneziaWG-EzServer-OpenWRT/main/awg-ezserver-openwrt.sh)"
 ```
