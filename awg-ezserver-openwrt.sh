@@ -49,7 +49,7 @@ _make_seed() {
     _s="${_s}$(cat /proc/uptime 2>/dev/null | tr -d ' .')"
     _s="${_s}$(date +%S%M%H%d%m%Y 2>/dev/null)"
     # Добавляем случайные байты из /dev/urandom если доступен
-    _s="${_s}$(dd if=/dev/urandom bs=4 count=1 2>/dev/null | od -An -tu4 | tr -d ' \n')"
+    _s="${_s}$(dd if=/dev/urandom bs=4 count=1 2>/dev/null | hexdump -n4 -e '"%u"' 2>/dev/null)"
     echo "$_s"
 }
 
@@ -540,7 +540,7 @@ print_summary() {
     echo "PersistentKeepalive = 25"
     echo ""
     echo "============================================================"
-    echo "  Замените X.X.X.X на внешний IP адрес вашего роутера."
+    echo "  Замените X.X.X.X на внешний IP адрес вашего роутера!"
     echo "============================================================"
 }
 
