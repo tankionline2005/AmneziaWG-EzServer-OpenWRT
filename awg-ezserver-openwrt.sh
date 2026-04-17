@@ -61,10 +61,18 @@ rand_range() {
         'BEGIN { srand(seed+0); print int(min + rand() * (max - min + 1)) }'
 }
 
-# Случайное 32-битное беззнаковое число (1 .. 2^32-1)
-rand_h() {
-    awk -v seed="$(_make_seed)" \
-        'BEGIN { srand(seed+0); print int(1 + rand() * 4294967294) }'
+# Генерирует 4 уникальных случайных 32-битных числа за один вызов awk.
+# Выводит их через пробел: "H1 H2 H3 H4"
+# Один вызов awk — один seed — четыре разных rand() → нет коллизий из-за одинакового seed.
+rand_h4() {
+    awk -v seed="$(_make_seed)" 'BEGIN {
+        srand(seed + 0)
+        do { h1 = int(1 + rand() * 4294967294) } while (h1 == 0)
+        do { h2 = int(1 + rand() * 4294967294) } while (h2 == h1)
+        do { h3 = int(1 + rand() * 4294967294) } while (h3 == h1 || h3 == h2)
+        do { h4 = int(1 + rand() * 4294967294) } while (h4 == h1 || h4 == h2 || h4 == h3)
+        print h1, h2, h3, h4
+    }'
 }
 
 # -----------------------------------------------------------------------------
@@ -178,33 +186,13 @@ generate_awg_headers() {
     # S2: response header junk size — 15..150
     AWG_S2=$(rand_range 15 150)
 
-    # H1..H4: уникальные случайные 32-bit числа
-    AWG_H1=$(rand_h)
-    AWG_H2=$(rand_h)
-    AWG_H3=$(rand_h)
-    AWG_H4=$(rand_h)
-
-    # Проверяем уникальность H1..H4, до 10 попыток
-    _attempt=0
-    while [ "$_attempt" -lt 10 ]; do
-        if [ "$AWG_H1" != "$AWG_H2" ] && \
-           [ "$AWG_H1" != "$AWG_H3" ] && \
-           [ "$AWG_H1" != "$AWG_H4" ] && \
-           [ "$AWG_H2" != "$AWG_H3" ] && \
-           [ "$AWG_H2" != "$AWG_H4" ] && \
-           [ "$AWG_H3" != "$AWG_H4" ]; then
-            break
-        fi
-        _attempt=$((_attempt + 1))
-        warn "Коллизия H-значений, перегенерируем (попытка ${_attempt})..."
-        AWG_H1=$(rand_h); AWG_H2=$(rand_h)
-        AWG_H3=$(rand_h); AWG_H4=$(rand_h)
-    done
-
-    # Если после 10 попыток всё ещё коллизия — что-то сильно не так с RNG
-    if [ "$_attempt" -eq 10 ]; then
-        die "Не удалось сгенерировать уникальные H1-H4 за 10 попыток. Проблема с генератором случайных чисел."
-    fi
+    # H1..H4: уникальные случайные 32-bit числа — генерируем за один вызов awk
+    # (единый seed → четыре последовательных rand() → гарантированно разные значения)
+    _h_vals=$(rand_h4) || die "Не удалось сгенерировать H-значения."
+    AWG_H1=$(echo "$_h_vals" | awk '{print $1}')
+    AWG_H2=$(echo "$_h_vals" | awk '{print $2}')
+    AWG_H3=$(echo "$_h_vals" | awk '{print $3}')
+    AWG_H4=$(echo "$_h_vals" | awk '{print $4}')
 
     log "  JC=$AWG_JC  JMIN=$AWG_JMIN  JMAX=$AWG_JMAX"
     log "  S1=$AWG_S1  S2=$AWG_S2"
