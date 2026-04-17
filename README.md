@@ -12,7 +12,8 @@ VPN-сервер на роутере — это ваш личный защищё
 Это, вероятно, один из лучших сценариев использования VPN на телефоне =)
 
 ## Запуск:
-ОБЯЗАТЕЛЬНО убедитесь что установлены следующие пакеты:
+> [!WARNING]  
+> ОБЯЗАТЕЛЬНО убедитесь что установлены следующие пакеты:
 > coreutils-od
 ```
 sh -c "$(wget -O - https://raw.githubusercontent.com/tankionline2005/AmneziaWG-EzServer-OpenWRT/main/awg-ezserver-openwrt.sh)"
