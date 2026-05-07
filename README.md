@@ -1,6 +1,7 @@
 # AmneziaWG-EzServer-OpenWRT
 > Проверено на OpenWrt 25.12.1 на роутере Cudy WR3000S
 > 
+<img width="2560" height="1920" alt="Image" src="https://github.com/user-attachments/assets/9d8bc83d-2871-4d23-8b31-495abb77ce7c" />
 ## Что это за скрипт?
 
 Это полностью автоматизированный установщик и конфигуратор AmneziaWG для OpenWRT, который превращает роутер в готовый VPN-сервер за один запуск, без ручного ковыряния в UCI и боли с firewall.
